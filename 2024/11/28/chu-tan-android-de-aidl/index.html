@@ -5,7 +5,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="初探Android的AIDL, mobile, security, software">
-    <meta name="description" content="">
+    <meta name="description" content="写这一篇是因为网上搜索到的AIDL都讲的比较复杂，涉及到了很多原理。但是我目前想以了解和使用为主，因此作出简短介绍。后面了解更深入的AIDL知识后会进一步更新
+什么是AIDLAIDL全称为Android Interface Definiti">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -363,12 +364,29 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">No tag</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Android/">
+                                <span class="chip bg-color">Android</span>
+                            </a>
+                        
+                            <a href="/tags/IPC/">
+                                <span class="chip bg-color">IPC</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/IPC/" class="post-category">
+                                IPC
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -386,14 +404,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
-                    0
+                    647
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
-                    1 Min
+                    2 Min
                 </div>
                 
 
@@ -416,7 +434,42 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <p>写这一篇是因为网上搜索到的AIDL都讲的比较复杂，涉及到了很多原理。但是我目前想以了解和使用为主，因此作出简短介绍。后面了解更深入的AIDL知识后会进一步更新</p>
+<h1 id="什么是AIDL"><a href="#什么是AIDL" class="headerlink" title="什么是AIDL"></a>什么是AIDL</h1><p>AIDL全称为Android Interface Definition Language，是Android的一种<strong>跨进程通信机制</strong>。AIDL允许开发者定义接口，通过该接口实现IPC（跨进程通信）。这种机制是基于Binder驱动实现的。</p>
+<h1 id="AIDL的原理"><a href="#AIDL的原理" class="headerlink" title="AIDL的原理"></a>AIDL的原理</h1><ol>
+<li><p>开发者定义接口：</p>
+<p>AIDL 允许开发者定义接口，这些接口通常包含服务端提供的方法。接口定义是通过一个 <code>.aidl</code> 文件来实现的。该文件描述了跨进程调用的方法和数据类型。</p>
+</li>
+<li><p>生成代码： </p>
+<p>Android 编译系统会将 AIDL 文件转换为 Java 代码，生成服务端和客户端的绑定类。服务端通过这些类来实现接口，而客户端通过这些类来调用服务端提供的接口方法。</p>
+</li>
+<li><p><strong>跨进程调用</strong>： </p>
+<p>客户端应用和服务端应用通常运行在不同的进程中。通过 AIDL 定义的接口，客户端可以调用服务端的方法</p>
+</li>
+</ol>
+<h1 id="AIDL的使用"><a href="#AIDL的使用" class="headerlink" title="AIDL的使用"></a>AIDL的使用</h1><p><strong>定义 AIDL 接口</strong>： 创建一个 <code>.aidl</code> 文件，定义要进行跨进程通信的接口及其方法。例如：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java复制代码// IMyService.aidl</span><br><span class="line">package com.example.aidl;</span><br><span class="line"></span><br><span class="line">interface IMyService {</span><br><span class="line">    int add(int a, int b);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>实现 AIDL 接口</strong>： 在服务端应用中实现这个接口：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MyService.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyService</span> <span class="keyword">extends</span> <span class="title class_">Service</span> {</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IMyService.<span class="type">Stub</span> <span class="variable">mBinder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">IMyService</span>.Stub() {</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> {</span><br><span class="line">            <span class="keyword">return</span> a + b;</span><br><span class="line">        }</span><br><span class="line">    };</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> IBinder <span class="title function_">onBind</span><span class="params">(Intent intent)</span> {</span><br><span class="line">        <span class="keyword">return</span> mBinder;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>绑定服务并调用接口</strong>： 客户端应用通过绑定服务和获取到 AIDL 接口的代理对象，来调用服务端提供的方法：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ClientActivity.java</span></span><br><span class="line">IMyService mService;</span><br><span class="line"><span class="type">ServiceConnection</span> <span class="variable">mConnection</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServiceConnection</span>() {</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> {</span><br><span class="line">        mService = IMyService.Stub.asInterface(service);</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> mService.add(<span class="number">1</span>, <span class="number">2</span>);  <span class="comment">// 调用远程服务的方法</span></span><br><span class="line">            Log.d(<span class="string">"Client"</span>, <span class="string">"Result: "</span> + result);</span><br><span class="line">        } <span class="keyword">catch</span> (RemoteException e) {</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onServiceDisconnected</span><span class="params">(ComponentName name)</span> {</span><br><span class="line">        mService = <span class="literal">null</span>;</span><br><span class="line">    }</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line"><span class="type">Intent</span> <span class="variable">intent</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Intent</span>();</span><br><span class="line">intent.setComponent(<span class="keyword">new</span> <span class="title class_">ComponentName</span>(<span class="string">"com.example.myservice"</span>, <span class="string">"com.example.myservice.MyService"</span>));</span><br><span class="line">bindService(intent, mConnection, Context.BIND_AUTO_CREATE);</span><br></pre></td></tr></tbody></table></figure>
+
+<h1 id="AIDL在Android-OS源码中的使用"><a href="#AIDL在Android-OS源码中的使用" class="headerlink" title="AIDL在Android OS源码中的使用"></a>AIDL在Android OS源码中的使用</h1><p>cs.android中有aosp的源码</p>
+<p>AIDL的使用在manager及其对应的service中非常常见</p>
+<p>比如AudioManager中，我们可以看到adjustStreamVolume API的内部实现其实调用的是service.adjustStreamVolumeWithAttribution;</p>
+<p>这就类似于上面所讲的客户端，我们可以去找AudioService以及IAudioService.aidl文件</p>
+<p><img src="/.com//Users\lishuang\blog\source_posts\初探Android的AIDL\image-20241127200347437.png" alt="image-20241127200347437"></p>
+<p><img src="/.com//Users\lishuang\blog\source_posts\初探Android的AIDL\image-20241127200512723.png" alt="image-20241127200512723"></p>
+<p>果然，AudioService中有：</p>
+<p><img src="/.com//Users\lishuang\blog\source_posts\初探Android的AIDL\image-20241127201540930.png" alt="image-20241127201540930"></p>
+<p>对应的AIDL文件中有：</p>
+<p><img src="/.com//Users\lishuang\blog\source_posts\初探Android的AIDL\image-20241127201714596.png" alt="image-20241127201714596"></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>【1】ChatGPT</p>
+<p>【2】<a target="_blank" rel="noopener" href="https://cs.android.com/">https://cs.android.com/</a></p>
+<p>【3】<a target="_blank" rel="noopener" href="https://juejin.cn/post/7123129439898042376">https://juejin.cn/post/7123129439898042376</a></p>
+
                 
             </div>
             <hr/>
@@ -479,7 +532,15 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">No tag</span>
+                            
+                                <a href="/tags/Android/">
+                                    <span class="chip bg-color">Android</span>
+                                </a>
+                            
+                                <a href="/tags/IPC/">
+                                    <span class="chip bg-color">IPC</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -582,13 +643,29 @@
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            Leyi
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/IPC/" class="post-category">
+                                    IPC
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
 
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Android/">
+                        <span class="chip bg-color">Android</span>
+                    </a>
+                    
+                    <a href="/tags/IPC/">
+                        <span class="chip bg-color">IPC</span>
+                    </a>
+                    
+                </div>
                 
             </div>
         </div>
@@ -836,7 +913,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;Total Words:&nbsp;<span
-                        class="white-color">720</span>
+                        class="white-color">1.4k</span>
             
             
             
